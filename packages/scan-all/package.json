@@ -1,0 +1,30 @@
+{
+  "name": "scan-all",
+  "version": "0.0.0",
+  "private": true,
+  "description": "> TODO: description",
+  "author": "Mathis Witte <mathis.witte@gmail.com>",
+  "homepage": "https://github.com/mathiswi/dealcollector#readme",
+  "license": "ISC",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mathiswi/dealcollector.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/mathiswi/dealcollector/issues"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.857.0"
+  }
+}

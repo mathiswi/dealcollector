@@ -1,0 +1,37 @@
+{
+  "name": "dealcollector",
+  "version": "0.1.0",
+  "bin": {
+    "dealcollector": "bin/dealcollector.js"
+  },
+  "scripts": {
+    "build": "lerna bootstrap && tsc && lerna clean --yes && lerna bootstrap -- --production",
+    "dev:aldi": "ts-node --files packages/aldi/local.ts",
+    "dev:lidl": "ts-node --files packages/lidl/local.ts",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "bootstrap": "lerna bootstrap && tsc",
+    "deploy": "npm run build && cdk deploy && tsc --build --clean && lerna clean --yes && lerna bootstrap && tsc ./packages/batch-write/index.ts"
+  },
+  "devDependencies": {
+    "@types/node": "14.14.35",
+    "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "@typescript-eslint/parser": "^4.18.0",
+    "eslint": "^7.22.0",
+    "eslint-config-airbnb-typescript": "^12.3.1",
+    "lerna": "^4.0.0",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.2.3"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigateway": "^1.94.1",
+    "@aws-cdk/aws-dynamodb": "^1.94.1",
+    "@aws-cdk/aws-events": "^1.94.1",
+    "@aws-cdk/aws-events-targets": "^1.94.1",
+    "@aws-cdk/aws-iam": "^1.94.1",
+    "@aws-cdk/aws-lambda": "^1.94.1",
+    "@aws-cdk/core": "^1.94.1",
+    "aws-cdk": "^1.94.1",
+    "source-map-support": "^0.5.19"
+  }
+}
