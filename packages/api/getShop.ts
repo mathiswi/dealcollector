@@ -12,9 +12,9 @@ export async function handler(event: any = {}): Promise<any> {
       ':shop': requestedShop,
     },
     // ProjectionExpression: 'basePrice, category, dealPrice, discount, description, imageUrl, #nm, shop, regularPrice, validFrom',
-    ExpressionAttributeNames: {
-      '#nm': 'name',
-    },
+    // ExpressionAttributeNames: {
+    //   '#nm': 'name',
+    // },
   };
 
   const res: DocumentClient.ScanOutput = await scanAll(params);
