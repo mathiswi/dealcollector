@@ -6,8 +6,6 @@
   },
   "scripts": {
     "build": "lerna bootstrap && tsc && lerna clean --yes && lerna bootstrap -- --production",
-    "dev:aldi": "ts-node --files packages/aldi/local.ts",
-    "dev:lidl": "ts-node --files packages/lidl/local.ts",
     "watch": "tsc -w",
     "cdk": "cdk",
     "bootstrap": "lerna bootstrap && tsc",

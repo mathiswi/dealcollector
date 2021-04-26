@@ -1,16 +1,24 @@
 import {
-  DocumentClient, WriteRequests, BatchWriteItemOutput, StringAttributeValue, ScanOutput,
+  DocumentClient, WriteRequests, BatchWriteItemOutput, StringAttributeValue, ItemList,
 } from 'aws-sdk/clients/dynamodb';
 
 const db: DocumentClient = new DocumentClient({ region: 'eu-central-1' });
 
-async function batchWrite(data: Array<unknown> | ScanOutput, mode: string = 'put', tableName: string = 'currentDeals', primaryKey: StringAttributeValue = 'dealId'): Promise<unknown> {
-  try {
-    // @ts-ignore
-    console.log(`${data.length} Items Batch ${mode}`);
+interface BatchWriteInput {
+  data: ItemList
+  mode?: string
+  tableName?: string
+  primaryKey?: StringAttributeValue
+}
+
+async function batchWrite({ data, mode = 'put', tableName = 'currentDeals', primaryKey = 'dealId' } : BatchWriteInput): Promise<unknown> {  try {
+    console.log(tableName);
+    if (typeof data === 'undefined' || data.length < 1) {
+      throw Error('Batch Write: No data available')
+    }
+    console.log(`${data?.length} Items Batch ${mode}`);
     const batches: Array<WriteRequests> = [];
     let currentBatch: WriteRequests = [];
-    // @ts-ignore
     data.forEach((element, index) => {
       if (index % 25 === 0 && index > 0) {
         batches.push(currentBatch);
@@ -19,7 +27,6 @@ async function batchWrite(data: Array<unknown> | ScanOutput, mode: string = 'put
       if (mode === 'put') {
         currentBatch.push({
           PutRequest: {
-            // @ts-ignore
             Item: element,
           },
         });
@@ -45,7 +52,6 @@ async function batchWrite(data: Array<unknown> | ScanOutput, mode: string = 'put
             [`${tableName}`]: batch,
           },
         };
-        // eslint-disable-next-line no-await-in-loop
         const batchRes: BatchWriteItemOutput = await db.batchWrite(batchParams).promise();
         // @ts-ignore
         if (Object.keys(batchRes.UnprocessedItems).length > 0) {

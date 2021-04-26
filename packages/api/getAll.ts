@@ -12,7 +12,7 @@ export async function handler(): Promise<any> {
     // },
   };
 
-  const res: DocumentClient.ScanOutput = await scanAll(params);
+  const res = await scanAll(params);
   return {
     statusCode: 200,
     body: JSON.stringify(res),

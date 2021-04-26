@@ -1,10 +1,10 @@
 import batchWrite from 'batch-write';
 import { getDeals } from './getDeals';
 
-export const handler = async () : Promise <any> => {
+export const handler = async (): Promise<any> => {
   try {
     const deals: Deal[] = await getDeals();
-    await batchWrite(deals);
+    await batchWrite({ data: deals });
     console.log(`Saved ${deals.length} Famila-Deals to DynamoDB`);
   } catch (err) {
     console.log(err);
