@@ -5,20 +5,20 @@ import {
 const db: DocumentClient = new DocumentClient({ region: 'eu-central-1' });
 
 interface BatchWriteInput {
-  data: ItemList
+  data: ItemList | Deal[]
   mode?: string
   tableName?: string
   primaryKey?: StringAttributeValue
 }
 
 async function batchWrite({ data, mode = 'put', tableName = 'currentDeals', primaryKey = 'dealId' } : BatchWriteInput): Promise<unknown> {  try {
-    console.log(tableName);
     if (typeof data === 'undefined' || data.length < 1) {
       throw Error('Batch Write: No data available')
     }
     console.log(`${data?.length} Items Batch ${mode}`);
     const batches: Array<WriteRequests> = [];
     let currentBatch: WriteRequests = [];
+    // @ts-ignore
     data.forEach((element, index) => {
       if (index % 25 === 0 && index > 0) {
         batches.push(currentBatch);
