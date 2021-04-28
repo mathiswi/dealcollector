@@ -21,7 +21,7 @@ function getImageUrl(img: HTMLImageElement): string {
   return (`https://www.aldi-nord.de/${imgUrl}`);
 }
 
-function getDateFromHref(href: string): number {
+function getValidFromFromHref(href: string): number {
   if (href.includes('aktion') === false || href.includes('archive')) return 0;
   const part = href.split('/')[2];
   const day = part.split('-')[2];
@@ -59,7 +59,7 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
     });
     if (delivery) return;
 
-    const validFrom = getDateFromHref(dealTile.querySelector<HTMLAnchorElement>('a')?.href as string);
+    const validFrom = getValidFromFromHref(dealTile.querySelector<HTMLAnchorElement>('a')?.href as string);
     const nameRaw = dealTile.querySelector('.mod-article-tile__title')?.textContent?.trim().toLocaleLowerCase()!;
     const name = capitalizeFirstLetters(nameRaw?.replace((/ {2}|\r\n\t|\t|\n|\r/gm), ''));
 
