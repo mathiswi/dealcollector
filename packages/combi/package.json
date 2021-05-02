@@ -1,0 +1,32 @@
+{
+	"name": "combi",
+	"version": "0.0.0",
+	"private": true,
+	"description": "> TODO: description",
+	"author": "Mathis Witte <mail@mwitte.dev>",
+	"homepage": "https://github.com/mathiswi/dealcollector#readme",
+	"license": "ISC",
+	"main": "combi.js",
+	"directories": {
+		"lib": "lib",
+		"test": "__tests__"
+	},
+	"files": [
+		"lib"
+	],
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/mathiswi/dealcollector.git"
+	},
+	"bugs": {
+		"url": "https://github.com/mathiswi/dealcollector/issues"
+	},
+	"devDependencies": {
+		"@types/uuid": "^8.3.0",
+		"axios": "^0.21.1",
+		"uuid": "^8.3.2"
+	},
+	"dependencies": {
+    "batch-write": "^0.0.0"
+  }
+}

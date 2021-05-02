@@ -36,6 +36,18 @@ export class DealcollectorStack extends cdk.Stack {
       },
     });
 
+    const combiLambda = new lambda.Function(this, 'combi', {
+      code: lambda.Code.fromAsset('packages/combi', { exclude: ['*.ts', 'local.js'] }),
+      handler: 'combi.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      timeout: Duration.seconds(20),
+      memorySize: 256,
+      layers: [axiosLayer, uuidLayer],
+      environment: {
+        TABLE_NAME: dealTable.tableName,
+      },
+    });
+
     const edekaLambda = new lambda.Function(this, 'edeka', {
       code: lambda.Code.fromAsset('packages/edeka', { exclude: ['*.ts', 'local.js'] }),
       handler: 'edeka.handler',
@@ -119,6 +131,7 @@ export class DealcollectorStack extends cdk.Stack {
     dealTable.grantReadWriteData(lidlLambda);
     dealTable.grantReadWriteData(edekaLambda);
     dealTable.grantReadWriteData(familaLambda);
+    dealTable.grantReadWriteData(combiLambda);
     dealTable.grantReadWriteData(aldiLambda);
     dealTable.grantReadWriteData(backupLambda);
 
@@ -150,6 +163,10 @@ export class DealcollectorStack extends cdk.Stack {
       schedule: events.Schedule.expression('cron(4 8 ? * SUN *)'),
     });
 
+    const collectRuleCombi = new events.Rule(this, 'Combi-cron', {
+      schedule: events.Schedule.expression('cron(4 8 ? * SUN *)'),
+    });
+
     const backupRule = new events.Rule(this, 'Backup-cron', {
       schedule: events.Schedule.expression('cron(2 8 ? * SUN *)'),
     });
@@ -163,6 +180,7 @@ export class DealcollectorStack extends cdk.Stack {
 
     collectRuleEdeka.addTarget(new targets.LambdaFunction(edekaLambda));
     collectRuleFamila.addTarget(new targets.LambdaFunction(familaLambda));
+    collectRuleCombi.addTarget(new targets.LambdaFunction(combiLambda));
     collectRuleLidl.addTarget(new targets.LambdaFunction(lidlLambda));
     collectRuleAldi.addTarget(new targets.LambdaFunction(aldiLambda));
 
