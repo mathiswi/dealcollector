@@ -5,15 +5,15 @@ import batchWrite from 'batch-write';
 export async function handler(): Promise<any> {
   try {
     const currentTable = 'currentDeals';
-    const date = new Date().toISOString().split('T')[0];
-    const newTable = `${date}_deals`;
+    // const date = new Date().toISOString().split('T')[0];
+    // const newTable = `${date}_deals`;
 
     const params: DocumentClient.ScanInput = {
       TableName: currentTable,
     };
     const res = await scanAll(params);
     console.log(res.length);
-    await batchWrite({ data: res, mode: 'put', tableName: newTable });
+    // await batchWrite({ data: res, mode: 'put', tableName: newTable });
     await batchWrite({ data: res, mode: 'delete', tableName: currentTable });
   } catch (err) {
     console.log(err);

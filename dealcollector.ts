@@ -127,6 +127,14 @@ export class DealcollectorStack extends cdk.Stack {
         TABLE_NAME: dealTable.tableName,
       },
     });
+    
+    const deployRequestLambda = new lambda.Function(this, 'deployRequest', {
+      code: lambda.Code.fromAsset('packages/deploy-request', { exclude: ['*.ts', 'local.js'] }),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_14_X,
+      timeout: Duration.seconds(10),
+      memorySize: 256,
+    });
 
     dealTable.grantReadWriteData(lidlLambda);
     dealTable.grantReadWriteData(edekaLambda);
@@ -151,28 +159,32 @@ export class DealcollectorStack extends cdk.Stack {
     }));
 
     const collectRuleLidl = new events.Rule(this, 'Lidl-cron', {
-      schedule: events.Schedule.expression('cron(4 8 ? * SUN *)'),
+      schedule: events.Schedule.expression('cron(4 5 ? * SUN *)'),
     });
     const collectRuleAldi = new events.Rule(this, 'Aldi-cron', {
-      schedule: events.Schedule.expression('cron(4 8 ? * SUN *)'),
+      schedule: events.Schedule.expression('cron(4 5 ? * SUN *)'),
     });
     const collectRuleEdeka = new events.Rule(this, 'Edeka-cron', {
-      schedule: events.Schedule.expression('cron(4 8 ? * SUN *)'),
+      schedule: events.Schedule.expression('cron(4 5 ? * SUN *)'),
     });
     const collectRuleFamila = new events.Rule(this, 'Famila-cron', {
-      schedule: events.Schedule.expression('cron(4 8 ? * SUN *)'),
+      schedule: events.Schedule.expression('cron(4 5 ? * SUN *)'),
     });
 
     const collectRuleCombi = new events.Rule(this, 'Combi-cron', {
-      schedule: events.Schedule.expression('cron(4 8 ? * SUN *)'),
+      schedule: events.Schedule.expression('cron(4 5 ? * SUN *)'),
     });
 
     const backupRule = new events.Rule(this, 'Backup-cron', {
-      schedule: events.Schedule.expression('cron(2 8 ? * SUN *)'),
+      schedule: events.Schedule.expression('cron(2 5 ? * SUN *)'),
     });
 
     const backupTableRule = new events.Rule(this, 'createBackupTable-cron', {
-      schedule: events.Schedule.expression('cron(0 8 ? * SUN *)'),
+      schedule: events.Schedule.expression('cron(0 5 ? * SUN *)'),
+    });
+
+    const deployRequestRule = new events.Rule(this, 'deployRequest-cron', {
+      schedule: events.Schedule.expression('cron(10 5 ? * SUN *)'),
     });
 
     backupRule.addTarget(new targets.LambdaFunction(backupLambda));
@@ -183,6 +195,8 @@ export class DealcollectorStack extends cdk.Stack {
     collectRuleCombi.addTarget(new targets.LambdaFunction(combiLambda));
     collectRuleLidl.addTarget(new targets.LambdaFunction(lidlLambda));
     collectRuleAldi.addTarget(new targets.LambdaFunction(aldiLambda));
+
+    deployRequestRule.addTarget(new targets.LambdaFunction(deployRequestLambda));
 
     const api = new apigateway.RestApi(this, 'dealApi', {
       restApiName: 'Deal Api',
