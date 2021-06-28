@@ -12,3 +12,4 @@ cdk.out
 *.map
 
 .vscode
+.env

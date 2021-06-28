@@ -31,9 +31,6 @@ export class DealcollectorStack extends cdk.Stack {
       timeout: Duration.seconds(20),
       memorySize: 256,
       layers: [axiosLayer, uuidLayer],
-      environment: {
-        TABLE_NAME: dealTable.tableName,
-      },
     });
 
     const combiLambda = new lambda.Function(this, 'combi', {
@@ -43,9 +40,6 @@ export class DealcollectorStack extends cdk.Stack {
       timeout: Duration.seconds(20),
       memorySize: 256,
       layers: [axiosLayer, uuidLayer],
-      environment: {
-        TABLE_NAME: dealTable.tableName,
-      },
     });
 
     const edekaLambda = new lambda.Function(this, 'edeka', {
@@ -55,9 +49,6 @@ export class DealcollectorStack extends cdk.Stack {
       timeout: Duration.seconds(20),
       memorySize: 256,
       layers: [axiosLayer, uuidLayer],
-      environment: {
-        TABLE_NAME: dealTable.tableName,
-      },
     });
 
     const lidlLambda = new lambda.Function(this, 'lidl', {
@@ -67,9 +58,6 @@ export class DealcollectorStack extends cdk.Stack {
       timeout: Duration.seconds(45),
       memorySize: 256,
       layers: [axiosLayer, uuidLayer, jsdomLayer],
-      environment: {
-        TABLE_NAME: dealTable.tableName,
-      },
     });
 
     const aldiLambda = new lambda.Function(this, 'aldi', {
@@ -79,9 +67,6 @@ export class DealcollectorStack extends cdk.Stack {
       timeout: Duration.seconds(20),
       memorySize: 256,
       layers: [axiosLayer, uuidLayer, jsdomLayer],
-      environment: {
-        TABLE_NAME: dealTable.tableName,
-      },
     });
 
     const getAllLambda = new lambda.Function(this, 'getAll-lambda', {
@@ -90,9 +75,6 @@ export class DealcollectorStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_14_X,
       timeout: Duration.seconds(10),
       memorySize: 256,
-      environment: {
-        TABLE_NAME: dealTable.tableName,
-      },
     });
 
     const getShopLambda = new lambda.Function(this, 'getShop-lambda', {
@@ -101,9 +83,6 @@ export class DealcollectorStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_14_X,
       timeout: Duration.seconds(10),
       memorySize: 256,
-      environment: {
-        TABLE_NAME: dealTable.tableName,
-      },
     });
 
     const backupLambda = new lambda.Function(this, 'backup-deals', {
@@ -112,9 +91,6 @@ export class DealcollectorStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_14_X,
       timeout: Duration.seconds(30),
       memorySize: 256,
-      environment: {
-        TABLE_NAME: dealTable.tableName,
-      },
     });
 
     const createBackupTableLambda = new lambda.Function(this, 'createBackupTable', {
@@ -123,9 +99,6 @@ export class DealcollectorStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_14_X,
       timeout: Duration.seconds(5),
       memorySize: 256,
-      environment: {
-        TABLE_NAME: dealTable.tableName,
-      },
     });
     
     const deployRequestLambda = new lambda.Function(this, 'deployRequest', {
@@ -134,6 +107,9 @@ export class DealcollectorStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_14_X,
       timeout: Duration.seconds(10),
       memorySize: 256,
+      environment: {
+        DEPLOY_HOOK: process.env.DEPLOY_HOOK as string,
+      },
     });
 
     dealTable.grantReadWriteData(lidlLambda);
