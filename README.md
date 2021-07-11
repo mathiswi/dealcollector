@@ -12,7 +12,7 @@ The API for the current week is accessible on https://r017129kll.execute-api.eu-
 
 ## Install
 
-If for some reason you want to run it yourself, follow these instructions (to deploy a configured aws-cli and aws-cdk is required):
+Configured aws-cli and aws-cdk is required to run/deploy. 
 
 ```
 # Install dependencies
