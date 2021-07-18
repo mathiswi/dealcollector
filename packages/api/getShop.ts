@@ -4,17 +4,16 @@ import scanAll from 'scan-all';
 export async function handler(event: any = {}): Promise<any> {
   const requestedShop: string = event.pathParameters.shop;
   const table = 'currentDeals';
+  const timestampNow = Math.round(Date.now() / 1000);
 
   const params: DocumentClient.ScanInput = {
     TableName: table,
-    FilterExpression: 'shop = :shop',
+    FilterExpression: 'shop = :shop AND expirationTime > :timestampNow',
     ExpressionAttributeValues: {
       ':shop': requestedShop,
+      ':timestampNow': timestampNow,
+
     },
-    // ProjectionExpression: 'basePrice, category, dealPrice, discount, description, imageUrl, #nm, shop, regularPrice, validFrom',
-    // ExpressionAttributeNames: {
-    //   '#nm': 'name',
-    // },
   };
 
   const res = await scanAll(params);

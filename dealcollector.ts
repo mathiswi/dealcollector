@@ -1,5 +1,5 @@
 import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
+// import * as iam from '@aws-cdk/aws-iam';
 import * as events from '@aws-cdk/aws-events';
 import * as targets from '@aws-cdk/aws-events-targets';
 import * as apigateway from '@aws-cdk/aws-apigateway';
@@ -22,6 +22,7 @@ export class DealcollectorStack extends cdk.Stack {
       },
       tableName: 'currentDeals',
       removalPolicy: cdk.RemovalPolicy.DESTROY, // NOT recommended for production code
+      timeToLiveAttribute: 'expirationTime',
     });
 
     const familaLambda = new lambda.Function(this, 'famila', {
@@ -85,6 +86,7 @@ export class DealcollectorStack extends cdk.Stack {
       memorySize: 256,
     });
 
+    /*
     const backupLambda = new lambda.Function(this, 'backup-deals', {
       code: lambda.Code.fromAsset('packages/backup-deals', { exclude: ['*.ts', 'local.js'] }),
       handler: 'index.handler',
@@ -94,13 +96,15 @@ export class DealcollectorStack extends cdk.Stack {
     });
 
     const createBackupTableLambda = new lambda.Function(this, 'createBackupTable', {
-      code: lambda.Code.fromAsset('packages/create-backup-table', { exclude: ['*.ts', 'local.js'] }),
+      code: lambda.Code.fromAsset('packages/create-backup-table', {
+        exclude: ['*.ts', 'local.js'] }),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
       timeout: Duration.seconds(5),
       memorySize: 256,
     });
-    
+    */
+
     const deployRequestLambda = new lambda.Function(this, 'deployRequest', {
       code: lambda.Code.fromAsset('packages/deploy-request', { exclude: ['*.ts', 'local.js'] }),
       handler: 'index.handler',
@@ -117,10 +121,12 @@ export class DealcollectorStack extends cdk.Stack {
     dealTable.grantReadWriteData(familaLambda);
     dealTable.grantReadWriteData(combiLambda);
     dealTable.grantReadWriteData(aldiLambda);
-    dealTable.grantReadWriteData(backupLambda);
 
     dealTable.grantReadWriteData(getAllLambda);
     dealTable.grantReadWriteData(getShopLambda);
+
+    /*
+    dealTable.grantReadWriteData(backupLambda);
 
     createBackupTableLambda.addToRolePolicy(new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
@@ -133,6 +139,8 @@ export class DealcollectorStack extends cdk.Stack {
       resources: ['*'],
       actions: ['dynamodb:*'],
     }));
+
+    */
 
     const collectRuleLidl = new events.Rule(this, 'Lidl-cron', {
       schedule: events.Schedule.expression('cron(4 5 ? * SUN *)'),
@@ -151,6 +159,10 @@ export class DealcollectorStack extends cdk.Stack {
       schedule: events.Schedule.expression('cron(4 5 ? * SUN *)'),
     });
 
+    const deployRequestRule = new events.Rule(this, 'deployRequest-cron', {
+      schedule: events.Schedule.expression('cron(10 5 ? * SUN *)'),
+    });
+    /*
     const backupRule = new events.Rule(this, 'Backup-cron', {
       schedule: events.Schedule.expression('cron(2 5 ? * SUN *)'),
     });
@@ -158,13 +170,9 @@ export class DealcollectorStack extends cdk.Stack {
     const backupTableRule = new events.Rule(this, 'createBackupTable-cron', {
       schedule: events.Schedule.expression('cron(0 5 ? * SUN *)'),
     });
-
-    const deployRequestRule = new events.Rule(this, 'deployRequest-cron', {
-      schedule: events.Schedule.expression('cron(10 5 ? * SUN *)'),
-    });
-
     backupRule.addTarget(new targets.LambdaFunction(backupLambda));
     backupTableRule.addTarget(new targets.LambdaFunction(createBackupTableLambda));
+    */
 
     collectRuleEdeka.addTarget(new targets.LambdaFunction(edekaLambda));
     collectRuleFamila.addTarget(new targets.LambdaFunction(familaLambda));

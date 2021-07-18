@@ -3,13 +3,13 @@ import scanAll from 'scan-all';
 
 export async function handler(): Promise<any> {
   const table = 'currentDeals';
-
+  const timestampNow = Math.round(Date.now() / 1000);
   const params: DocumentClient.ScanInput = {
     TableName: table,
-    // ProjectionExpression: 'basePrice, category, dealPrice, discount, description, imageUrl, #nm, shop, regularPrice, validFrom',
-    // ExpressionAttributeNames: {
-    //   '#nm': 'name',
-    // },
+    FilterExpression: 'expirationTime > :timestampNow',
+    ExpressionAttributeValues: {
+      ':timestampNow': timestampNow,
+    },
   };
 
   const res = await scanAll(params);

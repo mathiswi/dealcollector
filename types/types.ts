@@ -21,6 +21,7 @@ interface Deal {
   basePrice?: string
   category?: string
   shop: string
+  expirationTime?: number
 }
 
 interface Collection {
