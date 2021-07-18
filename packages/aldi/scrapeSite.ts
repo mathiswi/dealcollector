@@ -65,7 +65,7 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
 
     const description = dealTile.querySelector('.mod-article-tile__info')?.querySelector('p')?.textContent;
 
-    const priceString = dealTile.querySelector('.price__main')?.textContent;
+    const priceString = dealTile.querySelector('.price__wrapper')?.textContent;
     const dealPrice: number | undefined = Number(priceString?.replace((/ {2}|\r\n\t\*|\*|\t|\n|\r/gm), ''));
     const regularPriceText = dealTile.querySelector('.price__previous')?.textContent;
     const regularPrice = extractRegularPrice(regularPriceText);
