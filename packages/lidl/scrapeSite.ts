@@ -2,113 +2,69 @@ import axios from 'axios';
 import { JSDOM } from 'jsdom';
 import { v4 as uuidv4 } from 'uuid';
 
-function getValidFromWeekDay(link: string): number {
-  const part = link.split('/')[4];
-  const dateParts = part.split('-');
-  const month = dateParts.slice(-1)[0];
-  const day = dateParts.slice(-2)[0];
-  const date = new Date();
-
-  date.setMonth(Number(month) - 1);
-  date.setDate(Number(day));
-  date.setHours(12, 0, 0, 0);
-  return date.getDay();
-}
-
-function extractRegularPrice(node: Element | null): number | undefined {
-  if (node?.textContent?.includes('%') || node === null) return undefined;
-  return Number(node?.textContent?.replace((/ {2}|\r\n\t\s-|-|\t|\n|\r|\s/gm), ''));
-}
-
-function extractDealPrice(node: Element | null): number | null {
-  node?.querySelectorAll('span,sup').forEach((element) => element.remove());
-  if (node?.textContent?.includes('%')) return null;
-  return Number(node?.textContent?.replace((/ {2}|\r\n\t\s-|-|\t|\n|\r|\s/gm), ''));
-}
-
-function extractDiscount(node: Element | null) : string | null | undefined {
-  node?.querySelectorAll('sup').forEach((element) => element.remove());
-  return node?.textContent?.replace((/ {2}|\r\n\t|\t|\n|\r|/gm), '');
-}
-
-function changeBrTagToNewLine(str: string | null | undefined): string | null | undefined {
-  return str?.replace(/<br\s*\/?>/mg, '\n');
+function getValidFromHref(href: string): number {
+  const partOfLink = href.split('/')[2];
+  if (partOfLink.includes('billiger')) {
+    const weekDay: string = partOfLink.split('-')[1];
+    switch (weekDay) {
+      case 'montag':
+        return 1;
+      case 'dienstag':
+        return 2;
+      case 'mittwoch':
+        return 3;
+      case 'donnerstag':
+        return 4;
+      case 'wochenendlich':
+        return 5;
+      default:
+        return 0;
+    }
+  } else {
+    const month = partOfLink.split('-').slice(-1)[0];
+    const dayOfMonth = partOfLink.split('-').slice(-2)[0];
+    const date = new Date();
+    date.setMonth(Number(month) - 1);
+    date.setDate(Number(dayOfMonth));
+    date.setHours(12, 0, 0, 0);
+    return date.getDay();
+  }
 }
 
 export async function scrapeSite(dealSite: string): Promise<Deal[]> {
   try {
-    const validFrom = getValidFromWeekDay(dealSite);
-    const res = await axios.get(dealSite);
+    const validFrom = getValidFromHref(dealSite);
+    const res = await axios.get(`https://lidl.de${dealSite}`);
     const dom = new JSDOM(res.data);
 
     const deals: Deal[] = [];
 
-    // Offers up top
-    const topOffers = [...dom.window.document.querySelectorAll('.product-frische-tag')];
-    await Promise.all(topOffers.map(async (offer: Element) => {
-      const productDiscount = offer?.querySelector('p.yellow-tag')?.textContent;
-      let discount = productDiscount;
-      /*
-        Offers with "tagesaktuell" have the discount in the price tag
-      */
-      if (productDiscount?.includes('tagesaktuell')) {
-        discount = extractDiscount(offer.querySelector('.red-price-tag'));
-      }
-
-      if (!productDiscount?.includes('%')) {
-        discount = undefined;
-      }
-
-      const imageUrl = offer.querySelector<HTMLImageElement>('.product-image > img')?.src as string;
-
-      const name = offer.querySelector<HTMLHeadingElement>('.description > h1')?.textContent!;
-      const description = changeBrTagToNewLine(offer.querySelector<HTMLParagraphElement>('.description > p')?.innerHTML);
-
-      const regularPrice = extractRegularPrice(offer.querySelector('.old-price'));
-      const dealPrice = extractDealPrice(offer.querySelector('.red-price-tag'))!;
-
-      deals.push({
-        dealId: uuidv4(),
-        shop: 'lidl',
-        name,
-        description,
-        imageUrl,
-        dealPrice,
-        regularPrice,
-        validFrom,
-        discount,
-      });
-    }));
-
     // Offers at the bottom of the page
-    const bottomOffers = [...dom.window.document.querySelectorAll('.product-grid__item ')];
-    await Promise.all(bottomOffers.map(async (offer: Element) => {
-      if (!offer.querySelector('.desc-height')) return;
+    const bottomOffers = [...dom.window.document.querySelectorAll('.product-grid-box') as NodeListOf<HTMLAnchorElement>];
+    await Promise.all(bottomOffers.map(async (offer: HTMLAnchorElement) => {
 
       const imageUrl = offer.querySelector('img')?.src as string;
-      const name = offer.querySelector('.desc-height > strong')?.textContent as string;
-      const descriptions: NodeList = offer.querySelectorAll('.desc-height > .small')!;
-      let description = '';
-      descriptions.forEach((item) => {
-        if (item.textContent) description += `${item.textContent} `;
-      });
+      const name = offer.querySelector('.product-grid-box__title')?.textContent?.trim() as string;
+      const detailPage = `https://lidl.de${offer.href}`;
+      const description = offer.querySelector('.product-grid-box__desc')?.textContent as string;
 
-      const discount = offer.querySelector('.pricelabel__action-text')?.textContent;
-      const regPriceText = offer.querySelector('#oldPriceId')?.textContent;
+      const discount = offer.querySelector('.m-price__label')?.textContent;
+      const regularPrice = offer.querySelector('.m-price__rrp')?.textContent ? Number(offer.querySelector('.m-price__rrp')?.textContent) : undefined;
+      const basePrice = offer.querySelector('.m-price__base')?.textContent?.trim() as string;
 
-      const regularPrice = regPriceText ? Number(regPriceText) : undefined;
+      const dealPriceText = offer.querySelector('.m-price__price')?.textContent as string;
+      let dealPrice = Number(dealPriceText);
 
-      const basePrice = offer.querySelector('.pricelabel__baseprice')?.textContent?.replace((/ {2}|\r\n\t|\t|\n|\r/gm), '');
-
-      let dealPrice;
-      if (!offer.querySelector('.pricelabel__decimal-behind')) {
-        const integerPrice = Number(offer.querySelector('.pricelabel__integer')?.textContent);
-        const decimalPrice = Number(offer.querySelector('.pricelabel__decimal-superscript')?.textContent);
-        dealPrice = Number(`${integerPrice}.${decimalPrice}`);
-      } else {
-        const decimalPrice = Number(offer.querySelector('.pricelabel__decimal-behind')?.textContent);
+      // bei Preisen unter 1€
+      if (dealPriceText.includes('-')) {
+        const decimalPrice = dealPriceText.split('.')[1];
         dealPrice = Number(`0.${decimalPrice}`);
       }
+
+      if (name.includes('Wassermelone')) {
+        console.log(dealPrice);
+      }
+
       deals.push({
         dealId: uuidv4(),
         shop: 'lidl',

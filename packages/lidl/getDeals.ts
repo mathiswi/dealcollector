@@ -10,11 +10,16 @@ export async function getDeals(): Promise<Deal[]> {
     const dom: JSDOM = new JSDOM(res.data);
     const links: Array<string> = [];
     // TODO: Links korrekt abgreifen, Lidl hat Navigation angepasst
-    const navLinks: any = dom.window.document.querySelectorAll('.ATheHeroStage__OfferAnchor');
+    const navLinks = dom.window.document.querySelectorAll('.ATheHeroStage__SliderTrack');
+    const filialAngebote: HTMLDivElement = navLinks[0] as HTMLDivElement;
 
-    Object.values(navLinks).forEach((link: any) => {
-      if (link.href.includes('frische') || link.href.includes('angebote') || link.href.includes('testergebnisse') || link.href.includes('lidl-plus')) return;
+    const newLinks = filialAngebote.querySelectorAll('a');
+    Object.values(newLinks).some((link: any) => {
+      if (link.href.includes('coupons')) {
+        return true;
+      }
       links.push(link.href);
+      return false;
     });
 
     let deals: Deal[] = [];
