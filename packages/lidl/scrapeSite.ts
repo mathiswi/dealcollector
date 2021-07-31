@@ -42,7 +42,6 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
     // Offers at the bottom of the page
     const bottomOffers = [...dom.window.document.querySelectorAll('.product-grid-box') as NodeListOf<HTMLAnchorElement>];
     await Promise.all(bottomOffers.map(async (offer: HTMLAnchorElement) => {
-
       const imageUrl = offer.querySelector('img')?.src as string;
       const name = offer.querySelector('.product-grid-box__title')?.textContent?.trim() as string;
       const detailPage = `https://lidl.de${offer.href}`;
@@ -61,10 +60,6 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
         dealPrice = Number(`0.${decimalPrice}`);
       }
 
-      if (name.includes('Wassermelone')) {
-        console.log(dealPrice);
-      }
-
       deals.push({
         dealId: uuidv4(),
         shop: 'lidl',
@@ -76,7 +71,7 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
         basePrice,
         dealPrice,
         validFrom,
-        detailPage
+        detailPage,
       });
     }));
     return deals;
