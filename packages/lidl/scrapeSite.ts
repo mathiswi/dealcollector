@@ -73,7 +73,7 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
         basePrice,
         dealPrice,
         validFrom,
-        detailPage
+        detailPage,
       });
     };
     return deals;
