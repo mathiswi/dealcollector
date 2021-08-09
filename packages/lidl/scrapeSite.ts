@@ -39,10 +39,8 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
 
     const deals: Deal[] = [];
 
-    // Offers at the bottom of the page
-    const bottomOffers = [...dom.window.document.querySelectorAll('.product-grid-box') as NodeListOf<HTMLAnchorElement>];
-    await Promise.all(bottomOffers.map(async (offer: HTMLAnchorElement) => {
-
+    const bottomOffers: NodeListOf<HTMLAnchorElement> = dom.window.document.querySelectorAll('a.product-grid-box');
+    for (const offer of bottomOffers) {
       const imageUrl = offer.querySelector('img')?.src as string;
       const name = offer.querySelector('.product-grid-box__title')?.textContent?.trim() as string;
       const detailPage = `https://lidl.de${offer.href}`;
@@ -53,16 +51,15 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
       const basePrice = offer.querySelector('.m-price__base')?.textContent?.trim() as string;
 
       const dealPriceText = offer.querySelector('.m-price__price')?.textContent as string;
-      let dealPrice = Number(dealPriceText);
-
-      // bei Preisen unter 1€
-      if (dealPriceText.includes('-')) {
-        const decimalPrice = dealPriceText.split('.')[1];
-        dealPrice = Number(`0.${decimalPrice}`);
-      }
-
-      if (name.includes('Wassermelone')) {
-        console.log(dealPrice);
+      let dealPrice;
+      if (typeof dealPriceText === 'undefined') {
+        dealPrice = 0;
+      } else {
+        dealPrice = Number(dealPriceText);
+        if (dealPriceText.includes('-')) {
+          const decimalPrice = dealPriceText.split('.')[1];
+          dealPrice = Number(`0.${decimalPrice}`);
+        }
       }
 
       deals.push({
@@ -78,7 +75,7 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
         validFrom,
         detailPage
       });
-    }));
+    };
     return deals;
   } catch (err) {
     console.log(err);

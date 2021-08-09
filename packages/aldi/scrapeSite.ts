@@ -47,9 +47,10 @@ function extractRegularPrice(string: string | undefined | null): number | undefi
 export async function scrapeSite(dealSite: string): Promise<Deal[]> {
   const { data } = await axios.get(dealSite);
   const dom = new JSDOM(data);
-  const dealTiles = [...dom.window.document.querySelectorAll('.mod-article-tile')];
+  const dealTiles: NodeListOf<HTMLDivElement> = dom.window.document.querySelectorAll('div.mod-article-tile');
   const deals: Deal[] = [];
-  await Promise.all(dealTiles.map(async (dealTile: Element) => {
+
+  for (let dealTile of dealTiles) {
     let delivery = false;
     const classes: string[] = [].slice.apply(dealTile.classList);
     classes.forEach((element) => {
@@ -57,7 +58,7 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
         delivery = true;
       }
     });
-    if (delivery) return;
+    if (delivery) continue;
 
     const validFrom = getValidFromHref(dealTile.querySelector<HTMLAnchorElement>('a')?.href as string);
     const nameRaw = dealTile.querySelector('.mod-article-tile__title')?.textContent?.trim().toLocaleLowerCase()!;
@@ -92,6 +93,6 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
       basePrice,
       detailPage,
     });
-  }));
+  };
   return deals;
 }
