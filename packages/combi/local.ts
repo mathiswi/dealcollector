@@ -1,3 +1,3 @@
 import { handler as combi } from './combi';
 
-combi();
+combi(false);
