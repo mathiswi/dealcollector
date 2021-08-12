@@ -1,13 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-interface ScrapeResponse {
-  data: any
-}
-
-interface AnchorElement {
-  href: string
-}
-
 interface Deal {
   dealId?: string
   name: string | null
@@ -23,8 +13,4 @@ interface Deal {
   shop: string
   expirationTime?: number
   detailPage?: string
-}
-
-interface Collection {
-  name: string
 }

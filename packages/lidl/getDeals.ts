@@ -5,7 +5,7 @@ import { scrapeSite } from './scrapeSite';
 export async function getDeals(): Promise<Deal[]> {
   try {
     const url: string = 'https://www.lidl.de/de/filial-angebote';
-    const res: ScrapeResponse = await axios.get(url);
+    const res = await axios.get(url);
 
     const dom: JSDOM = new JSDOM(res.data);
     const links: Array<string> = [];

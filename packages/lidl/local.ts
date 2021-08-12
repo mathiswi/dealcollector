@@ -1,3 +1,3 @@
 import { handler as lidl } from './lidl';
 
-lidl();
+lidl(false);
