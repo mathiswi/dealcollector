@@ -8,7 +8,7 @@ export const handler = async (saveToDb: Boolean = true): Promise<any> => {
       await batchWrite({ data: deals });
     }
     console.log(`Saved ${deals.length} Lidl-Deals to DynamoDB`);
-  } catch (err) {
+  } catch (err: any) {
     console.error(err);
   }
 };

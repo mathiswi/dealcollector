@@ -5,7 +5,7 @@ export async function getDeals(): Promise<Deal[]> {
     const url = 'https://www.aldi-nord.de/angebote.html?ftl-avail=Filiale&ftl-pty=Hygiene+%26+Kosmetik%2CLebensmittel';
     const deals = await scrapeSite(url);
     return deals;
-  } catch (err) {
+  } catch (err: any) {
     throw Error(err);
   }
 }

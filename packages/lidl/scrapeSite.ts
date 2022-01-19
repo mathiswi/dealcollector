@@ -77,7 +77,7 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
       });
     };
     return deals;
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
     throw Error(err);
   }

@@ -15,7 +15,7 @@ export async function handler(): Promise<any> {
     console.log(res.length);
     // await batchWrite({ data: res, mode: 'put', tableName: newTable });
     await batchWrite({ data: res, mode: 'delete', tableName: currentTable });
-  } catch (err) {
+  } catch (err: any) {
     console.log(err);
   }
 }

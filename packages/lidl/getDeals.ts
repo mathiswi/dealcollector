@@ -30,7 +30,7 @@ export async function getDeals(): Promise<Deal[]> {
       },
     ));
     return deals;
-  } catch (err) {
+  } catch (err: any) {
     throw Error(err);
   }
 }

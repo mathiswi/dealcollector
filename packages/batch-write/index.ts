@@ -75,13 +75,13 @@ async function batchWrite({
             keepSending = false;
           }
         } while (keepSending);
-      } catch (err) {
+      } catch (err: any) {
         console.log(batch);
         console.log(err);
       }
     }));
     return 'Success';
-  } catch (err) {
+  } catch (err: any) {
     throw Error(err);
   }
 }

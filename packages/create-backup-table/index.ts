@@ -31,7 +31,7 @@ export async function handler(): Promise<any> {
     const tableRes = await dynamoDB.createTable(newTableParams).promise();
     console.log(tableRes);
     return 'success';
-  } catch (err) {
+  } catch (err: any) {
     console.log(err, err.stack);
     return 'failure';
   }

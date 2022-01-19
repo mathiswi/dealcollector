@@ -85,7 +85,7 @@ export async function getDeals(): Promise<Deal[]> {
       });
     } while (totalPages > page);
     return deals;
-  } catch (error) {
-    throw new Error(error);
+  } catch (err: any) {
+    throw new Error(err);
   }
 }
