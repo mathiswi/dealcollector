@@ -1,52 +1,54 @@
-import axios from 'axios';
+import chromium from 'chrome-aws-lambda';
+import playwright, { Page } from 'playwright-core';
 import { JSDOM } from 'jsdom';
 import { v4 as uuidv4 } from 'uuid';
+import { extractRegularPrice } from './extractRegularPrice';
+import { getValidFromHref } from './getValidFromHref';
+import { getImageUrl } from './getImageUrl';
+import { capitalizeFirstLetters } from './capitalizeFirstLetters';
 
-function capitalizeFirstLetters(string: string): string {
-  const words = string.split(' ');
-  const capitalizedWords = words.map((word) => word.charAt(0).toUpperCase() + word.slice(1));
-  let result = '';
-  capitalizedWords.forEach((word) => {
-    result += `${word} `;
+
+async function autoScroll(page: Page) {
+  await page.evaluate(async () => {
+    await new Promise((resolve) => {
+      var totalHeight = 0;
+      var distance = 100;
+      var timer = setInterval(() => {
+        var scrollHeight = document.body.scrollHeight;
+        window.scrollBy(0, distance);
+        totalHeight += distance;
+
+        if (totalHeight >= scrollHeight) {
+          clearInterval(timer);
+          resolve(undefined);
+        }
+      }, 1);
+    });
   });
-  result += ' ';
-  return result;
 }
 
-function getImageUrl(img: HTMLImageElement): string {
-  const srcsets: Array<string> = img?.dataset?.srcset?.split(',') || [];
-  if (srcsets.length < 1) return '';
-  const tempString: string = srcsets.slice(-1)[0];
-  const imgUrl: string = tempString.split(' ')[1];
-  return (`https://www.aldi-nord.de/${imgUrl}`);
-}
-
-function getValidFromHref(href: string): number {
-  if (href.includes('aktion') === false || href.includes('archive')) return 0;
-  const part = href.split('/')[2];
-  const day = part.split('-')[2];
-  const month = part.split('-')[3];
-  const date = new Date();
-  date.setMonth(Number(month) - 1);
-  date.setDate(Number(day));
-  date.setHours(12, 0, 0, 0);
-  return date.getDay();
-}
-
-function extractRegularPrice(string: string | undefined | null): number | undefined {
-  if (typeof string === 'undefined' || string === null) return undefined;
-  /*
-      If price is  UVP 0.99
-    */
-  if (string.includes(' ')) {
-    return Number(string.split(' ')[1]);
-  }
-  return Number(string);
-}
 
 export async function scrapeSite(dealSite: string): Promise<Deal[]> {
-  const { data } = await axios.get(dealSite);
+  const browser = await playwright.chromium.launch({
+    args: chromium.args,
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
+  });
+  const context = await browser.newContext();
+  const page = await context.newPage();
+  await page.goto(dealSite);
+  await page.setViewportSize({
+    width: 1200,
+    height: 800
+  });
+  await autoScroll(page);
+  await page.screenshot({
+    path: 'yoursite.png',
+    fullPage: true
+  });
+  const data = await page.content();
   const dom = new JSDOM(data);
+  await browser.close();
   const dealTiles: NodeListOf<HTMLDivElement> = dom.window.document.querySelectorAll('div.mod-article-tile');
   const deals: Deal[] = [];
 

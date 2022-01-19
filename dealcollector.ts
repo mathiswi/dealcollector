@@ -14,6 +14,7 @@ export class DealcollectorStack extends cdk.Stack {
     const axiosLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'axios-lambda-layer', 'arn:aws:lambda:eu-central-1:161489297905:layer:axios-lambda-layer:2');
     const uuidLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'uuid-lambda-layer', 'arn:aws:lambda:eu-central-1:161489297905:layer:uuid-lambda-layer:2');
     const jsdomLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'jsdom-lambda-layer', 'arn:aws:lambda:eu-central-1:161489297905:layer:jsdom-lambda-layer:4');
+    const playwrightLayer = lambda.LayerVersion.fromLayerVersionArn(this, 'playwright-lambda-layer', 'arn:aws:lambda:eu-central-1:161489297905:layer:playwright-lambda-layer:2');
 
     const dealTable = new dynamodb.Table(this, 'Deals', {
       partitionKey: {
@@ -67,7 +68,7 @@ export class DealcollectorStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_14_X,
       timeout: Duration.seconds(20),
       memorySize: 256,
-      layers: [axiosLayer, uuidLayer, jsdomLayer],
+      layers: [uuidLayer, jsdomLayer, playwrightLayer],
     });
 
     const getAllLambda = new lambda.Function(this, 'getAll-lambda', {
