@@ -66,8 +66,8 @@ export class DealcollectorStack extends cdk.Stack {
       code: lambda.Code.fromAsset('packages/aldi', { exclude: ['*.ts', 'local.js'] }),
       handler: 'aldi.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
-      timeout: Duration.seconds(20),
-      memorySize: 256,
+      timeout: Duration.minutes(1),
+      memorySize: 1024,
       layers: [uuidLayer, jsdomLayer, playwrightLayer],
     });
 
