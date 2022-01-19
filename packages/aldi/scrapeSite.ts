@@ -42,10 +42,6 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
     height: 800
   });
   await autoScroll(page);
-  await page.screenshot({
-    path: 'yoursite.png',
-    fullPage: true
-  });
   const data = await page.content();
   const dom = new JSDOM(data);
   await browser.close();
