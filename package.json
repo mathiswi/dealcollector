@@ -11,10 +11,10 @@
     "bootstrap": "lerna bootstrap && tsc",
     "deploy": "npm run build && cdk deploy && tsc --build --clean && lerna clean --yes && lerna bootstrap",
     "dev:aldi": "tsc && AWS_LAMBDA_FUNCTION_NAME=dummyName node packages/aldi/local.js && tsc --build --clean",
-    "dev:lidl": "tsc && node packages/lidl/local.js",
-    "dev:edeka": "tsc && node packages/edeka/local.js",
-    "dev:famila": "tsc && node packages/famila/local.js",
-    "dev:combi": "tsc && node packages/combi/local.js",
+    "dev:lidl": "tsc && node packages/lidl/local.js && tsc --build --clean",
+    "dev:edeka": "tsc && node packages/edeka/local.js && tsc --build --clean",
+    "dev:famila": "tsc && node packages/famila/local.js && tsc --build --clean",
+    "dev:combi": "tsc && node packages/combi/local.js && tsc --build --clean",
     "test": "jest"
   },
   "devDependencies": {

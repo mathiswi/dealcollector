@@ -1,10 +1,12 @@
 import { JSDOM } from 'jsdom';
 import axios from 'axios';
 import { scrapeSite } from './scrapeSite';
+import { getDealsLink } from './getDealsLink';
 
 export async function getDeals(): Promise<Deal[]> {
   try {
-    const url: string = 'https://www.lidl.de/de/filial-angebote';
+    const dealsLink = await getDealsLink();
+    const url: string = `https://www.lidl.de${dealsLink}`;
     const res = await axios.get(url);
 
     const dom: JSDOM = new JSDOM(res.data);
