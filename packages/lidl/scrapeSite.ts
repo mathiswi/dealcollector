@@ -31,6 +31,10 @@ function getValidFromHref(href: string): number {
   }
 }
 
+function cleanRegularPriceString(string: string) {
+  return string.replaceAll('*', '');
+}
+
 export async function scrapeSite(dealSite: string): Promise<Deal[]> {
   try {
     const validFrom = getValidFromHref(dealSite);
@@ -47,7 +51,11 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
       const description = offer.querySelector('.product-grid-box__desc')?.textContent as string;
 
       const discount = offer.querySelector('.m-price__label')?.textContent;
-      const regularPrice = offer.querySelector('.m-price__rrp')?.textContent ? Number(offer.querySelector('.m-price__rrp')?.textContent) : undefined;
+      const regularPriceString = offer.querySelector('.m-price__rrp')?.textContent;
+      let regularPrice;
+      if (regularPriceString) {
+        regularPrice = Number(cleanRegularPriceString(regularPriceString));
+      }
       const basePrice = offer.querySelector('.m-price__base')?.textContent?.trim() as string;
 
       const dealPriceText = offer.querySelector('.m-price__price')?.textContent as string;
