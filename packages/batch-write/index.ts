@@ -33,10 +33,15 @@ async function batchWrite({
       }
       const Item: Deal | AttributeMap = { ...element };
       if (expireNextWeek) {
-        const lastSunday = new Date();
+        let lastSunday;
         const today = new Date();
-        lastSunday.setDate(today.getDate() - today.getDay());
-        lastSunday.setHours(9, 0, 0, 0);
+        if (today.getDay() === 6) {
+          lastSunday = today;
+        } else {
+          lastSunday = new Date();
+          lastSunday.setDate(today.getDate() - today.getDay());
+          lastSunday.setHours(9, 0, 0, 0);
+        }
         const expirationTime = Math.round(lastSunday.getTime() / 1000) + oneWeek;
         Item.expirationTime = expirationTime;
       }
