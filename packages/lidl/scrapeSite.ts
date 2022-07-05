@@ -42,7 +42,7 @@ export async function scrapeSite(dealSite: string): Promise<Deal[]> {
     const bottomOffers: NodeListOf<HTMLAnchorElement> = dom.window.document.querySelectorAll('a.product-grid-box');
     for (const offer of bottomOffers) {
       const imageUrl = offer.querySelector('img')?.src as string;
-      const name = offer.querySelector('.product-grid-box__title')?.textContent?.trim() as string;
+      const name = offer.querySelector('.grid-box__headline')?.textContent?.trim() as string;
       const detailPage = `https://lidl.de${offer.href}`;
       const description = offer.querySelector('.product-grid-box__desc')?.textContent as string;
 
