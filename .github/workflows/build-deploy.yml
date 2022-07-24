@@ -20,7 +20,7 @@ jobs:
           node-version: "16.x"
 
       - name: Install dependencies
-        run: npm istall
+        run: npm install
 
       # Step 3 starts here !!!
       - name: Deploy
