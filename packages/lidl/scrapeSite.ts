@@ -1,4 +1,6 @@
-import axios from 'axios';
+import chromium from 'chrome-aws-lambda';
+import playwright from 'playwright-core';
+
 import { JSDOM } from 'jsdom';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -38,8 +40,19 @@ function cleanRegularPriceString(string: string) {
 export async function scrapeSite(dealSite: string): Promise<Deal[]> {
   try {
     const validFrom = getValidFromHref(dealSite);
-    const res = await axios.get(`https://lidl.de${dealSite}`);
-    const dom = new JSDOM(res.data);
+    const browser = await playwright.chromium.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+    });
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await page.goto('https://lidl.de' + dealSite);
+    await page.click('text=Zustimmen');
+
+    const data = await page.content();
+    const dom = new JSDOM(data);
+    await browser.close();
 
     const deals: Deal[] = [];
 
