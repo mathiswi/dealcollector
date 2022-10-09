@@ -59,7 +59,7 @@ export class DealcollectorStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_14_X,
       timeout: Duration.seconds(45),
       memorySize: 256,
-      layers: [uuidLayer, jsdomLayer, playwrightLayer],
+      layers: [axiosLayer, uuidLayer, jsdomLayer, playwrightLayer],
     });
 
     const aldiLambda = new lambda.Function(this, 'aldi', {
