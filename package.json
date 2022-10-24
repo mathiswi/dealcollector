@@ -5,7 +5,7 @@
     "dealcollector": "bin/dealcollector.js"
   },
   "scripts": {
-    "build": "lerna bootstrap && tsc && lerna clean --yes && lerna bootstrap -- --production",
+    "build": "lerna bootstrap && tsc && lerna clean --yes && lerna bootstrap -- --production --no-bin-links",
     "watch": "tsc -w",
     "cdk": "cdk",
     "bootstrap": "lerna bootstrap && tsc",
