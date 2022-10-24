@@ -24,16 +24,16 @@
   "bugs": {
     "url": "https://github.com/mathiswi/dealcollector/issues"
   },
+  "dependencies": {
+    "batch-write": "^0.0.0"
+  },
   "devDependencies": {
     "@types/jsdom": "^16.2.6",
     "@types/uuid": "^8.3.0",
     "axios": "^0.21.1",
     "chrome-aws-lambda": "^10.1.0",
     "jsdom": "^16.4.0",
-    "playwright-core": "^1.26.1",
+    "playwright-core": "^1.17.2",
     "uuid": "^8.3.2"
-  },
-  "dependencies": {
-    "batch-write": "^0.0.0"
   }
 }

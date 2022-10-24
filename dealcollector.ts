@@ -57,8 +57,8 @@ export class DealcollectorStack extends cdk.Stack {
       code: lambda.Code.fromAsset('packages/lidl', { exclude: ['*.ts', 'local.js'] }),
       handler: 'lidl.handler',
       runtime: lambda.Runtime.NODEJS_14_X,
-      timeout: Duration.seconds(45),
-      memorySize: 256,
+      timeout: Duration.minutes(1),
+      memorySize: 1024,
       layers: [axiosLayer, uuidLayer, jsdomLayer, playwrightLayer],
     });
 
