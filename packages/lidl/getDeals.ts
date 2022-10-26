@@ -25,12 +25,10 @@ export async function getDeals(): Promise<Deal[]> {
     });
 
     let deals: Deal[] = [];
-    await Promise.all(links.map(
-      async (dealSite) => {
-        const newDeals: Deal[] = await scrapeSite(dealSite);
-        deals = [...deals, ...newDeals];
-      },
-    ));
+    for (let dealSite of links) {
+      const newDeals: Deal[] = await scrapeSite(dealSite);
+      deals = [...deals, ...newDeals];
+    }
     return deals;
   } catch (err: any) {
     throw Error(err);
